@@ -152,9 +152,9 @@ window.addEventListener('click', () => {
                 }
             }
         });
-        if (object.name.includes ('projects')) {
-            showModal(modals.projects);
-        } else if (object.name.includes('about')) {
+       // if (object.name.includes ('projects')) {
+         //   showModal(modals.projects);}
+         if (object.name.includes('about')) {
             showModal(modals.about);
         } else if (object.name.includes('contact')) {
             showModal(modals.contact);
