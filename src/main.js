@@ -412,3 +412,5 @@ const render = () => {
     } else {
         camera.position.set(-10, 5, 60);
     }
+
+    
