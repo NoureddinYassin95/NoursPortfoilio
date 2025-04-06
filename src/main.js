@@ -9,7 +9,9 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import gsap from 'gsap';
 
-// Get the button element from the HTML
+
+
+console.log("THREE.js loaded successfully.");// Get the button element from the HTML
 const themeButton = document.getElementById('toggleEnv');
 
 // Function to switch textures
@@ -18,20 +20,32 @@ const switchTextures = () => {
     isNight = !isNight;
     scene.traverse((child) => {
         if (child.isMesh) {
-            Object.keys(textureMap).forEach((key) => {
-                if (child.name === key) {
+            // Check for interactive elements and apply the 'Third' texture
+            if (child.name.includes('Hover') || child.name === 'instagram' || child.name === 'linkedin' || child.name === 'about' || child.name === 'contact' || child.name === 'projects' || child.name.includes('Key')) {
+                const key = 'Third';
+                if (child.material && loadedTextures.day[key] && loadedTextures.night[key]) {
                     child.material.map = isNight ? loadedTextures.night[key] : loadedTextures.day[key];
-                    if(child.material.map){child.material.needsUpdate = true;}
+                    child.material.needsUpdate = true;
                 }
-                if (child.name === key + 'Night') {
-                    child.material.map = isNight ? loadedTextures.night[key] : loadedTextures.day[key];
-                    if(child.material.map){child.material.needsUpdate = true;}
-                }
-            });
+            } else {
+                // Apply day/night textures based on the object name (your existing logic)
+                Object.keys(textureMap).forEach((key) => {
+                    if (child.name === key) {
+                        if (child.material && child.material.map && loadedTextures.day[key] && loadedTextures.night[key]) {
+                            child.material.map = isNight ? loadedTextures.night[key] : loadedTextures.day[key];
+                            child.material.needsUpdate = true;
+                        }
+                    }
+                    if (child.name === key + 'Night') {
+                        if (child.material && child.material.map && loadedTextures.day[key] && loadedTextures.night[key]) {
+                            child.material.map = isNight ? loadedTextures.night[key] : loadedTextures.day[key];
+                            child.material.needsUpdate = true;
+                        }
+                    }
+                });
+            }
         }
     });
-
-    // Update button content based on isNight
     themeButton.textContent = isNight ? '☀️' : '🌙';
 };
 
@@ -39,9 +53,7 @@ const switchTextures = () => {
 themeButton.addEventListener('click', switchTextures);
 
 // Set initial button content
-themeButton.textContent = '🌙'; // Start with sun
-
-
+themeButton.textContent = '🌙';
 
 const modals = {
     about: document.querySelector('.about.modal'),
@@ -112,10 +124,10 @@ const environmentMap = new THREE.CubeTextureLoader()
     .load(['px.webp', 'nx.webp', 'py.webp', 'ny.webp', 'pz.webp', 'nz.webp']);
 
 const textureMap = {
-    First: { day: '/texture/Room/day/FinalFirstTextureSetDay-1.webp', night: '/texture/Room/night/FinalFirstTextureSetNight-1.webp' },
-    Second: { day: '/texture/Room/day/FinalSecondTextureSetDay.webp', night: '/texture/Room/night/FinalSecondTextureSetNight-2.webp' },
-    Third: { day: '/texture/Room/day/FinalThirdTextureSetDay-1.webp', night: '/texture/Room/night/FinalThirdTextureSetNight-1.webp' },
-    Fourth: { day: '/texture/Room/day/FinalFourthTextureSetDay-1.webp', night: '/texture/Room/night/FinalFourthTextureSetNight-1.webp' },
+    First: { day: '/texture/Room/day/FinalFirstTextureSetDay.webp', night: '/texture/Room/night/FinalFirstTextureSetNight.webp' },
+    Second: { day: '/texture/Room/day/FinalSecondTextureSetDay.webp', night: '/texture/Room/night/FinalSecondTextureSetNight.webp' },
+    Third: { day: '/texture/Room/day/FinalThirdTextureSetDay.webp', night: '/texture/Room/night/FinalThirdTextureSetNight.webp' },
+    Fourth: { day: '/texture/Room/day/FinalFourthTextureSetDay.webp', night: '/texture/Room/night/FinalFourthTextureSetNight.webp' },
 };
 
 const loadedTextures = { day: {}, night: {} };
@@ -133,6 +145,25 @@ Object.entries(textureMap).forEach(([key, paths]) => {
         loadedTextures.night[key] = nightTexture;
         nightTexture.minFilter = THREE.LinearFilter;
     });
+});
+
+const glassMaterial = new THREE.MeshPhysicalMaterial({
+    transmission: 1,
+    opacity: 1,
+    color: 0xfbfbfb,
+    metalness: 0,
+    roughness: 0,
+    ior: 3,
+    thickness: 0.01,
+    specularIntensity: 1,
+    envMap: environmentMap,
+    envMapIntensity: 1,
+    depthWrite: false,
+    specularColor: 0xfbfbfb,
+});
+
+const whiteMaterial = new THREE.MeshBasicMaterial({
+    color: 0xffffff,
 });
 
 const neonfontMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, emissive: 0xffffff, emissiveIntensity: 1 });
@@ -205,9 +236,9 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.minDistance = 10;
 controls.minPolarAngle = 0;
-controls.maxPolarAngle = Math.PI / 2;
+controls.maxPolarAngle = Math.PI / 3;
 controls.minAzimuthAngle = 0;
-controls.maxAzimuthAngle = Math.PI / 2;
+controls.maxAzimuthAngle = Math.PI / 40;
 controls.enableDamping = true;
 controls.dampingFactor = 0.05;
 controls.update();
@@ -217,7 +248,7 @@ renderer.toneMappingExposure = 1;
 const defaultMinAzimuthAngle = -Math.PI / 3;
 const defaultMaxAzimuthAngle = Math.PI / 100;
 controls.minAzimuthAngle = defaultMinAzimuthAngle;
-controls.maxAzimuthAngle = defaultMaxAzimuthAngle;
+const defaultShiftAzimuthAngle = Math.PI / 100;
 const shiftMinAzimuthAngle = -Math.PI / 6;
 const shiftMaxAzimuthAngle = Math.PI / 6;
 controls.minPolarAngle = Math.PI / 2;
@@ -232,7 +263,7 @@ window.addEventListener('keydown', (event) => {
 window.addEventListener('keyup', (event) => {
     if (event.shiftKey) {
         controls.minAzimuthAngle = defaultMinAzimuthAngle;
-        controls.maxAzimuthAngle = defaultMaxAzimuthAngle;
+        controls.maxAzimuthAngle = defaultShiftAzimuthAngle;
         controls.update();
     }
 });
@@ -285,67 +316,76 @@ const render = () => {
                 }
                 document.body.style.cursor = 'pointer';
                 break;
+            }}
+            if (newHoveredObject === null && currentHoveredObject !== null) {
+                playHoverAnimation(currentHoveredObject, false);
+                currentHoveredObject = null;
+                document.body.style.cursor = 'default';
             }
         }
-        if (newHoveredObject === null && currentHoveredObject !== null) {
-            playHoverAnimation(currentHoveredObject, false);
-            currentHoveredObject = null;
-            document.body.style.cursor = 'default';
-        }
-    }
-    animationFrameId = requestAnimationFrame(render);
-};
-loader.load('/models/BAZAAR15.glb', (glb) => {
-    let instagramMesh = null;
-    glb.scene.traverse((child) => {
-        if (child.isMesh && child.name === 'instagram') {
-            instagramMesh = child;
-        }
-        if (child.isMesh) {
-            child.userData.initialScale = new THREE.Vector3().copy(child.scale);
-            child.userData.initialRotation = new THREE.Euler().copy(child.rotation);
-            if (child.name.includes('glass') || child.name === 'windows' || child.name === 'jar.004') {
-                child.userData.initialPosition = new THREE.Vector3().copy(child.position);
-            }
-            if (child.name.includes('Hover') || child.name.includes('instagram') || child.name.includes('linkedin') || child.name.includes('about') || child.name.includes('contact') || child.name.includes('projects') || child.name.includes('Key')) {
-                if (child.name === 'instagram' && (!textureMap.Fourth || !loadedTextures.day.Fourth)) {
-                    console.error('Textures for instagram not loaded for:', child.name);
-                } else {
+        animationFrameId = requestAnimationFrame(render);
+    };
+    loader.load('/models/final2.glb', (glb) => {
+        let instagramMesh = null;
+        let linkedinMesh = null;
+        let projectsMesh = null;
+        let aboutMesh = null;
+        let contactMesh = null;
+    
+        glb.scene.traverse((child) => {
+            if (child.isMesh) {
+                child.userData.initialScale = new THREE.Vector3().copy(child.scale);
+                child.userData.initialRotation = new THREE.Euler().copy(child.rotation);
+    
+                if (child.name === 'instagram') instagramMesh = child;
+                if (child.name === 'linkedin') linkedinMesh = child;
+                if (child.name === 'projects') projectsMesh = child;
+                if (child.name === 'about') aboutMesh = child;
+                if (child.name === 'contact') contactMesh = child;
+    
+                if (child.name.includes('glass') || child.name === 'windows' || child.name === 'jar.004') {
+                    child.material = glassMaterial;
+                    child.userData.initialPosition = new THREE.Vector3().copy(child.position);
+                } else if (child.name.includes('Hover') || child.name === 'instagram' || child.name === 'linkedin' || child.name === 'about' || child.name === 'contact' || child.name === 'projects' || child.name.includes('Key')) {
+                    // Apply the 'Third' NIGHT texture set to these interactive elements on load
+                    const key = 'Third';
+                    if (loadedTextures.night[key]) {
+                        child.material = new THREE.MeshBasicMaterial({ map: loadedTextures.night[key] });
+                        console.log(`Applied night texture ${key} to interactive object: ${child.name}`);
+                    } else {
+                        console.warn(`Night texture ${key} not loaded for interactive object: ${child.name}`);
+                        child.material = neonfontMaterial; // Fallback
+                    }
+                } else if (child.name.includes('neonfont') || child.name === 'projects' || child.name === 'about' || child.name === 'contact' || child.name.includes('Pointer')) {
                     child.material = neonfontMaterial;
-                    console.log('Applied neonfont material to:', child.name);
+                    console.log('Neon material applied to:', child.name);
+                    RaycasterObjects.push(child);
+                } else {
+                    Object.keys(textureMap).forEach((key) => {
+                        if (child.name === key) {
+                            const material = new THREE.MeshBasicMaterial({
+                                map: loadedTextures.day[key],
+                            });
+                            child.material = material;
+                            console.log('Applied day texture', key, 'to mesh', child.name);
+                        }
+                        if (child.name === key + 'Night') {
+                            const material = new THREE.MeshBasicMaterial({
+                                map: loadedTextures.night[key],
+                            });
+                            child.material = material;
+                            console.log('Applied night texture', key, 'to mesh', child.name);
+                        }
+                    });
                 }
-            } else if (child.name.includes('neonfont') || child.name === 'projects' || child.name === 'about' || child.name === 'contact' || child.name.includes('Pointer')) {
-                child.material = neonfontMaterial;
-                console.log('Neon material applied to:', child.name);
-                RaycasterObjects.push(child);
-            } else {
-                Object.keys(textureMap).forEach((key) => {
-                    if (child.name === key) {
-                        const material = new THREE.MeshBasicMaterial({
-                            map: loadedTextures.day[key],
-                        });
-                        child.material = material;
-                        console.log('Applied day texture', key, 'to mesh', child.name);
-                    }
-                    if (child.name === key + 'Night') {
-                        const material = new THREE.MeshBasicMaterial({
-                            map: loadedTextures.night[key],
-                        });
-                        child.material = material;
-                        console.log('Applied night texture', key, 'to mesh', child.name);
-                    }
-                });
             }
-        }
-    });
-    scene.add(glb.scene);
-    if (instagramMesh) {
-        const linkedin = glb.scene.getObjectByName('linkedin');
-        const projects = glb.scene.getObjectByName('projects');
-        const about = glb.scene.getObjectByName('about');
-        const contact = glb.scene.getObjectByName('contact');
-        if (linkedin && projects && about && contact) {
-            playIntroAnimation(instagramMesh, linkedin, projects, about, contact);
+        });
+    
+        scene.add(glb.scene);
+    
+        if (instagramMesh && linkedinMesh && projectsMesh && aboutMesh && contactMesh) {
+            playIntroAnimation(instagramMesh, linkedinMesh, projectsMesh, aboutMesh, contactMesh);
+    
             function playIntroAnimation(instagram, linkedin, projects, about, contact) {
                 const t1 = gsap.timeline({
                     defaults: {
@@ -354,24 +394,25 @@ loader.load('/models/BAZAAR15.glb', (glb) => {
                     }
                 });
                 t1.to(instagram.scale, { z: 1, x: 1 })
-                    .to(linkedin.scale, { z: 1, y: 1, x: 1 })
-                    .to(projects.scale, { z: 1, y: 1, x: 1 })
-                    .to(about.scale, { z: 1, y: 1, x: 1 })
-                    .to(contact.scale, { z: 1, y: 1, x: 1 });
+                    .to(linkedin.scale, { z: 1, y: 1, x: 1 }, '-=0.6')
+                    .to(projects.scale, { z: 1, y: 1, x: 1 }, '-=0.6')
+                    .to(about.scale, { z: 1, y: 1, x: 1 }, '-=0.6')
+                    .to(contact.scale, { z: 1, y: 1, x: 1 }, '-=0.6');
             }
         } else {
-            console.error('One or more meshes not found in the GLB scene.');
+            console.error('One or more social media meshes not found in the GLB scene.');
         }
+    
+        RaycasterObjects.push(glb.scene);
+        animationFrameId = requestAnimationFrame(render);
+    }, undefined, function (error) {
+        console.error(error);
+    });
+    
+    if (window.innerWidth < 768) {
+        camera.position.set(-10.29687964815422, 5.395157308130587, 60.89652930161158);
     } else {
-        console.error('instagram mesh not found');
+        camera.position.set(-10, 5, 60);
     }
-    RaycasterObjects.push(glb.scene);
-    animationFrameId = requestAnimationFrame(render);
-}, undefined, function (error) {
-    console.error(error);
-});
-if (window.innerWidth < 768) {
-    camera.position.set(-10.29687964815422, 5.395157308130587, 60.89652930161158);
-} else {
-    camera.position.set(-10, 5, 60);
-}
+
+    
