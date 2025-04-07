@@ -42,8 +42,8 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: rgba(26, 26, 26, 0.9); /* Dark background with transparency */
-    color: #f0f0f0; /* Light text */
+    background-color: rgba(26, 26, 26, 0.9);
+    color: #f0f0f0;
     padding: 30px;
     border-radius: 12px;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
@@ -51,20 +51,21 @@
     width: 80%;
     max-width: 700px;
     overflow-y: auto;
-    font-family: "Super Lobster", 'Arial', sans-serif; /* Apply Super Lobster */
+    font-family: "Super Lobster", 'Arial', sans-serif;
+    font-size: 0.9em; /* Added base font size for modal content */
 }
 
 .modal-title {
-    font-size: 2em;
+    font-size: 1.5em; /* Reduced from 2em */
     font-weight: 600;
     margin-bottom: 25px;
     text-align: center;
     color: #e0e0e0;
-    font-family: "Super Lobster", 'Arial', sans-serif; /* Apply Super Lobster */
+    font-family: "Super Lobster", 'Arial', sans-serif;
 }
 
 .modal-exit-button {
-    background-color: #333; /* Darker button */
+    background-color: #333;
     color: #f0f0f0;
     border: none;
     padding: 12px 25px;
@@ -75,18 +76,15 @@
     margin-left: auto;
     margin-right: auto;
     transition: background-color 0.3s ease;
-    font-family: "Super Lobster", 'Arial', sans-serif; /* Apply Super Lobster */
-}
-
-.modal-exit-button:hover {
-    background-color: #444;
+    font-family: "Super Lobster", 'Arial', sans-serif;
+    font-size: 0.9em; /* Added for button text */
 }
 
 .about.modal .modal-title {
-    font-size: 1.1em;
+    font-size: 1em; /* Reduced from 1.1em */
     line-height: 1.7;
     text-align: left;
-    font-family: "Super Lobster", 'Arial', sans-serif; /* Apply Super Lobster */
+    font-family: "Super Lobster", 'Arial', sans-serif;
 }
 
 /* style.css */
