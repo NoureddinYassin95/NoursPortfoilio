@@ -410,9 +410,9 @@ const render = () => {
     });
     
     if (window.innerWidth < 768) {
-        camera.position.set(-10.29687964815422, 5.395157308130587, 60.89652930161158);
+        camera.position.set(-10.29687964815422, 5.395157308130587, 80);
     } else {
-        camera.position.set(-10, 5, 60);
+        camera.position.set(-8, 3, 80);
     }
 
     
